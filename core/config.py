@@ -98,14 +98,27 @@ def load_config(config_path=None):
 
 
 def save_config(config, config_path=None):
-    """Speichert Konfiguration als JSON."""
+    """Speichert Konfiguration als JSON, ohne Credentials zu persistieren.
+
+    Persistente Secrets werden ausschließlich gezielt über ``set_config_value``
+    in die gitignorierte ``config.local.json`` geschrieben. Ein vollständiger
+    Config-Snapshot darf niemals ``auth.value`` in eine getrackte oder beliebige
+    Zieldatei kopieren.
+    """
     if config_path is None:
         config_path = BASE_DIR / "config.json"
     else:
         config_path = Path(config_path)
 
+    safe_config = deepcopy(config)
+    auth = safe_config.get("auth")
+    if isinstance(auth, dict):
+        auth["value"] = ""
+    elif auth is not None:
+        raise ValueError("auth muss ein Objekt sein; Konfiguration wurde nicht gespeichert")
+
     with open(config_path, "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=4, ensure_ascii=False)
+        json.dump(safe_config, f, indent=4, ensure_ascii=False)
 
 
 def set_config_value(key, value, config_path=None):
@@ -124,7 +137,9 @@ def set_config_value(key, value, config_path=None):
     else:
         config_path = Path(config_path)
 
-    if key in SECRET_KEYS:
+    if key == "auth" and not isinstance(value, dict):
+        raise ValueError("auth muss ein Objekt sein")
+    if key in SECRET_KEYS or key == "auth":
         target_path = config_path.parent / LOCAL_CONFIG_NAME
     else:
         target_path = config_path
@@ -172,8 +187,14 @@ def redact_config(config):
     """
     redacted = deepcopy(config)
     auth = redacted.get("auth")
-    if isinstance(auth, dict) and auth.get("value"):
-        auth["value"] = REDACTED_PLACEHOLDER
+    if isinstance(auth, dict):
+        if auth.get("value"):
+            auth["value"] = REDACTED_PLACEHOLDER
+    elif auth is not None:
+        redacted["auth"] = {
+            "type": "none",
+            "value": REDACTED_PLACEHOLDER,
+        }
     return redacted
 
 

@@ -4,7 +4,7 @@
   "display_name": "ApiProber",
   "category": "tools",
   "kind": "tool",
-  "status": "released",
+  "status": "staging",
   "visibility": "public",
   "provides": [
     "tool.api-probe",
@@ -31,9 +31,9 @@
     ]
   },
   "source_of_truth": {
-    "type": "local-directory",
+    "type": "git-repository",
     "path": ".",
-    "repository": null
+    "repository": "https://github.com/dev-bricks/ApiProber"
   },
   "adapters": []
 }

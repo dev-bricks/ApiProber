@@ -98,6 +98,9 @@ class Database:
     def upsert_service(self, name, base_url, description="", server_header="",
                        robots_txt="", metadata=None):
         """Service anlegen oder aktualisieren. Gibt service_id zurueck."""
+        from .http_client import normalize_base_url
+
+        base_url = normalize_base_url(base_url)
         now = datetime.now(timezone.utc).isoformat()
         meta_json = json.dumps(metadata or {}, ensure_ascii=False)
         conn = self._connect()
@@ -314,13 +317,16 @@ class Database:
     # ── Probe Runs ────────────────────────────────────────────────────────
 
     def create_probe_run(self, service_id, config=None):
-        """Neuen Probe-Run starten. Gibt run_id zurueck."""
+        """Neuen Probe-Run starten; Credentials werden am DB-Sink redigiert."""
+        from .config import redact_config
+
+        safe_config = redact_config(config or {})
         conn = self._connect()
         try:
             cur = conn.execute("""
                 INSERT INTO probe_runs (service_id, config_json)
                 VALUES (?, ?)
-            """, (service_id, json.dumps(config or {}, ensure_ascii=False)))
+            """, (service_id, json.dumps(safe_config, ensure_ascii=False)))
             conn.commit()
             return cur.lastrowid
         finally:

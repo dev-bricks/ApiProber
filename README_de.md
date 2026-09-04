@@ -9,7 +9,7 @@
 # ApiProber -- Passives API-Discovery- und Dokumentations-Tool
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![Pytest 21 passed](https://img.shields.io/badge/pytest-21_passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest 93 bestanden, 1 übersprungen](https://img.shields.io/badge/pytest-93_bestanden%2C_1_%C3%BCbersprungen-brightgreen.svg)](https://docs.pytest.org/)
 [![Zero Dependencies](https://img.shields.io/badge/Abh%C3%A4ngigkeiten-keine-success.svg)]()
 [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
 [![LLM-Ready](https://img.shields.io/badge/LLM--Ready-llms.txt-success.svg)](llms.txt)
@@ -72,8 +72,8 @@ ApiProber ist kein Exploit-Framework, Schwachstellen-Scanner, Fuzzer oder Lastte
 Keine Installation erforderlich -- funktioniert ausschließlich mit der Python 3.8+ Standardbibliothek.
 
 ```bash
-git clone https://github.com/dev-bricks/apiprober.git
-cd apiprober
+git clone https://github.com/dev-bricks/ApiProber.git
+cd ApiProber
 
 # Direkt aus dem Repository-Root ausführen
 python api_prober.py --help
@@ -96,8 +96,8 @@ python api_prober.py probe https://jsonplaceholder.typicode.com
 # Tiefe Untersuchung mit benutzerdefinierter Verzögerung
 python api_prober.py probe https://api.example.com --depth 2 --delay-ms 1000
 
-# Authentifizierte Untersuchung
-python api_prober.py probe https://api.example.com --auth-type bearer --auth-value "IHR_TOKEN"
+# Authentifizierte Untersuchung (die verdeckte Eingabe hält das Token aus den Prozessargumenten fern)
+python api_prober.py probe https://api.example.com --auth-type bearer --auth-prompt
 ```
 
 ### Dienste verwalten
@@ -136,12 +136,15 @@ python api_prober.py config --set auth.type bearer
 
 ### Umgang mit Anmeldedaten
 
-Anmeldedaten (Credentials) werden außerhalb der versionierten `config.json` und der lokalen SQLite-Datenbank gehalten:
+Anmeldedaten werden aus Prozessargumenten, Befehlsausgaben, der versionierten `config.json`, gespeicherten Untersuchungen und Exporten herausgehalten:
 
 - **Empfohlen:** Setzen Sie die Umgebungsvariablen `APIPROBER_AUTH_VALUE` (und optional `APIPROBER_AUTH_TYPE`). Diese haben Vorrang vor allen Konfigurationsdateien und werden niemals auf die Festplatte geschrieben.
-- `python api_prober.py config --set auth.value "TOKEN"` schreibt den Wert in `config.local.json` -- eine gitignorierte Overlay-Datei neben `config.json` -- niemals in die versionierte `config.json`.
+- Für eine einzelne interaktive Untersuchung oder Fortsetzung verwenden Sie `--auth-prompt`. Soll ein Zugangswert bewusst gespeichert werden, verwenden Sie `python api_prober.py config --set-auth`; die verdeckte Eingabe schreibt ausschließlich in die gitignorierte `config.local.json`.
+- Frühere Formen mit Geheimnissen in Argumenten (`--auth-value TOKEN` und `config --set auth.value TOKEN`) werden abgewiesen, ohne den Wert auszugeben.
+- `config --show` redigiert `auth.value` immer.
 - Konfigurationsauflösung: Standardwerte -> `config.json` -> `config.local.json` -> Umgebungsvariablen.
 - In der SQLite-Datenbank gespeicherte Run-Konfigurationen haben `auth.value` zensiert (`***REDACTED***`); `resume` liest das Credential erneut aus der aktuellen Konfiguration oder Umgebung ein.
+- Untersuchungsziele und alle Weiterleitungen müssen kanonische HTTP(S)-URLs ohne eingebettete Zugangsdaten sein. Bei einem Origin-Wechsel werden konfigurierte Authentifizierungsheader nicht weitergegeben.
 
 ---
 
@@ -292,7 +295,7 @@ python -m pytest -q test_smoke.py
 
 Lukas Geiger -- [github.com/lukisch](https://github.com/lukisch)
 
-Repository -- [dev-bricks/apiprober](https://github.com/dev-bricks/apiprober)
+Repository -- [dev-bricks/ApiProber](https://github.com/dev-bricks/ApiProber)
 
 ---
 

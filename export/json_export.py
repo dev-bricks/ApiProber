@@ -16,6 +16,10 @@ def export_json(db, service, output_path):
         service: Service-dict aus DB
         output_path: Ziel-Pfad fuer .json-Datei
     """
+    from ..core.http_client import normalize_base_url
+
+    service = dict(service)
+    service["base_url"] = normalize_base_url(service["base_url"])
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 

@@ -6,7 +6,7 @@ CLI Entry Point mit argparse Subcommands.
 Pattern: llmauto/llmauto.py (argparse + func-Dispatch)
 
 Verwendung:
-    python api_prober.py probe <url> [--depth N] [--delay-ms N] [--auth-type TYPE] [--auth-value VALUE]
+    python api_prober.py probe <url> [--depth N] [--delay-ms N] [--auth-type TYPE] [--auth-prompt]
     python api_prober.py list
     python api_prober.py status <service>
     python api_prober.py export <service> [--format md|json]
@@ -14,6 +14,7 @@ Verwendung:
     python api_prober.py config [--show | --set KEY VALUE]
 """
 import argparse
+import getpass
 import json
 import sys
 from pathlib import Path
@@ -27,10 +28,51 @@ if _parent not in sys.path:
 VERSION = "0.1.0"
 
 
+def _safe_stored_base_url(value):
+    """Return a canonical stored URL or a fixed redaction marker."""
+    from ApiProber.core.http_client import normalize_base_url
+
+    try:
+        return normalize_base_url(value)
+    except ValueError:
+        return "[ungültige URL redigiert]"
+
+
+def _read_auth_secret():
+    """Read a credential only when the terminal can suppress input echo."""
+    if not sys.stdin.isatty():
+        raise RuntimeError(
+            "Verdeckte Eingabe benötigt ein interaktives Terminal; "
+            "alternativ APIPROBER_AUTH_VALUE verwenden."
+        )
+    try:
+        value = getpass.getpass("Auth-Wert (verdeckt): ")
+    except (EOFError, KeyboardInterrupt) as exc:
+        raise RuntimeError("Verdeckte Eingabe wurde abgebrochen.") from exc
+    if not value:
+        raise RuntimeError("Auth-Wert darf nicht leer sein.")
+    return value
+
+
 def cmd_probe(args):
     """Probe-Modus: API abtasten."""
     from ApiProber.core.config import load_config
+    from ApiProber.core.http_client import normalize_base_url
     from ApiProber.discovery.orchestrator import ProbeOrchestrator
+
+    if args.auth_value is not None:
+        print(
+            "[FEHLER] --auth-value ist aus Sicherheitsgründen deaktiviert; "
+            "APIPROBER_AUTH_VALUE oder --auth-prompt verwenden.",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        base_url = normalize_base_url(args.url)
+    except ValueError as exc:
+        print(f"[FEHLER] Ungültige Basis-URL: {exc}", file=sys.stderr)
+        return 2
 
     config = load_config()
 
@@ -43,13 +85,17 @@ def cmd_probe(args):
         config["max_requests"] = args.max_requests
     if args.auth_type:
         config["auth"]["type"] = args.auth_type
-    if args.auth_value:
-        config["auth"]["value"] = args.auth_value
+    if args.auth_prompt:
+        try:
+            config["auth"]["value"] = _read_auth_secret()
+        except RuntimeError as exc:
+            print(f"[FEHLER] {exc}", file=sys.stderr)
+            return 2
     if args.test_all_methods:
         config["skip_destructive"] = False
 
     orchestrator = ProbeOrchestrator(config)
-    result = orchestrator.probe(args.url, depth=args.depth)
+    result = orchestrator.probe(base_url, depth=args.depth)
 
     if result and result.get("error"):
         return 1
@@ -81,7 +127,8 @@ def cmd_list(args):
         last = svc.get("last_probed", "-") or "-"
         if last and len(last) > 16:
             last = last[:16]
-        print(f"{svc['name']:<25} {svc['base_url']:<45} {stats['endpoints']:<10} {last}")
+        safe_url = _safe_stored_base_url(svc["base_url"])
+        print(f"{svc['name']:<25} {safe_url:<45} {stats['endpoints']:<10} {last}")
 
     return 0
 
@@ -104,7 +151,7 @@ def cmd_status(args):
     runs = db.get_probe_runs(service["id"])
 
     print(f"Service: {service['name']}")
-    print(f"URL:     {service['base_url']}")
+    print(f"URL:     {_safe_stored_base_url(service['base_url'])}")
     print(f"Server:  {service.get('server_header', '-')}")
     print(f"Entdeckt:  {service.get('discovered_at', '-')}")
     print(f"Letztes Probing: {service.get('last_probed', '-')}")
@@ -137,6 +184,13 @@ def cmd_export(args):
     if not service:
         print(f"Service '{args.service}' nicht gefunden.")
         return 1
+
+    safe_url = _safe_stored_base_url(service["base_url"])
+    if safe_url.startswith("["):
+        print("[FEHLER] Export abgebrochen: gespeicherte Basis-URL ist ungültig oder sensibel.")
+        return 2
+    service = dict(service)
+    service["base_url"] = safe_url
 
     export_dir = get_export_dir(config)
     export_dir.mkdir(parents=True, exist_ok=True)
@@ -175,6 +229,12 @@ def cmd_resume(args):
     from ApiProber.discovery.orchestrator import ProbeOrchestrator
 
     config = load_config()
+    if args.auth_prompt:
+        try:
+            config["auth"]["value"] = _read_auth_secret()
+        except RuntimeError as exc:
+            print(f"[FEHLER] {exc}", file=sys.stderr)
+            return 2
     orchestrator = ProbeOrchestrator(config)
     result = orchestrator.resume(args.service)
 
@@ -185,17 +245,35 @@ def cmd_resume(args):
 
 def cmd_config(args):
     """Konfiguration anzeigen oder setzen."""
-    from ApiProber.core.config import (load_config, set_config_value,
+    from ApiProber.core.config import (load_config, redact_config, set_config_value,
                                        SECRET_KEYS, ENV_AUTH_VALUE)
 
     if args.show:
         config = load_config()
-        print(json.dumps(config, indent=4, ensure_ascii=False))
+        print(json.dumps(redact_config(config), indent=4, ensure_ascii=False))
+        return 0
+
+    if args.set_auth:
+        try:
+            value = _read_auth_secret()
+        except RuntimeError as exc:
+            print(f"[FEHLER] {exc}", file=sys.stderr)
+            return 2
+        target_path = set_config_value("auth.value", value)
+        print(f"Gesetzt: auth.value = ***  ->  {target_path.name} (gitignored)")
         return 0
 
     if args.key and args.value:
         key = args.key
         value = args.value
+
+        if key in SECRET_KEYS or key == "auth":
+            print(
+                f"[FEHLER] config --set {key} VALUE ist aus Sicherheitsgründen deaktiviert; "
+                "config --set-auth verwenden.",
+                file=sys.stderr,
+            )
+            return 2
 
         # Typ-Konvertierung
         if value.lower() in ("true", "false"):
@@ -211,16 +289,10 @@ def cmd_config(args):
 
         target_path = set_config_value(key, value)
 
-        if key in SECRET_KEYS:
-            # Secret nie auf der Konsole oder in der getrackten Datei zeigen
-            print(f"Gesetzt: {key} = ***  ->  {target_path.name} (gitignored)")
-            print(f"Hinweis: Empfohlen ist die Umgebungsvariable {ENV_AUTH_VALUE} --")
-            print("sie hat Vorrang vor allen Config-Dateien und landet nie auf der Platte.")
-        else:
-            print(f"Gesetzt: {key} = {value}  ->  {target_path.name}")
+        print(f"Gesetzt: {key} = {value}  ->  {target_path.name}")
         return 0
 
-    print("Verwendung: config --show | config --set KEY VALUE")
+    print(f"Verwendung: config --show | config --set KEY VALUE | config --set-auth ({ENV_AUTH_VALUE})")
     return 0
 
 
@@ -239,7 +311,9 @@ def main():
     probe_parser.add_argument("--delay-ms", type=int, default=None, help="Delay zwischen Requests in ms")
     probe_parser.add_argument("--max-requests", type=int, default=None, help="Maximale Anzahl Requests")
     probe_parser.add_argument("--auth-type", choices=["bearer", "api_key", "basic"], help="Auth-Typ")
-    probe_parser.add_argument("--auth-value", help="Auth-Wert (Token, Key, user:pass)")
+    probe_parser.add_argument("--auth-prompt", action="store_true",
+                              help="Auth-Wert verdeckt im interaktiven Terminal abfragen")
+    probe_parser.add_argument("--auth-value", help=argparse.SUPPRESS)
     probe_parser.add_argument("--test-all-methods", action="store_true",
                               help="Auch POST/PUT/PATCH/DELETE testen (default: nur GET/HEAD/OPTIONS)")
     probe_parser.set_defaults(func=cmd_probe)
@@ -263,13 +337,18 @@ def main():
     # --- resume ---
     resume_parser = subparsers.add_parser("resume", help="Probing fortsetzen")
     resume_parser.add_argument("service", help="Service-Name")
+    resume_parser.add_argument("--auth-prompt", action="store_true",
+                               help="Auth-Wert verdeckt im interaktiven Terminal abfragen")
     resume_parser.set_defaults(func=cmd_resume)
 
     # --- config ---
     config_parser = subparsers.add_parser("config", help="Konfiguration verwalten")
-    config_parser.add_argument("--show", action="store_true", help="Aktuelle Konfiguration anzeigen")
-    config_parser.add_argument("--set", nargs=2, metavar=("KEY", "VALUE"), dest="key_value",
-                               help="Konfigurationswert setzen")
+    config_actions = config_parser.add_mutually_exclusive_group()
+    config_actions.add_argument("--show", action="store_true", help="Aktuelle Konfiguration anzeigen")
+    config_actions.add_argument("--set", nargs=2, metavar=("KEY", "VALUE"), dest="key_value",
+                                help="Nicht-sensitive Konfiguration setzen")
+    config_actions.add_argument("--set-auth", action="store_true",
+                                help="Auth-Wert verdeckt nach config.local.json schreiben")
     config_parser.set_defaults(func=cmd_config)
 
     # Parsen

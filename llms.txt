@@ -2,7 +2,7 @@
 
 > Passive API discovery and documentation CLI for undocumented REST services.
 
-Canonical repository: https://github.com/dev-bricks/apiprober
+Canonical repository: https://github.com/dev-bricks/ApiProber
 Owner organization: dev-bricks
 License: MIT
 Primary language: Python
@@ -47,6 +47,7 @@ load-testing tool. Default probing uses read-only HTTP methods and rate limiting
 - `export/`: Markdown and JSON exporters
 - `wordlists/`: bundled REST/OpenAPI/auth/admin path lists
 - `test_smoke.py`: smoke tests for imports, CLI, database, probing, and export commands
+- `test_security.py`: credential, URL, redirect, persistence, and export boundary tests
 
 ## Verification
 
@@ -76,4 +77,6 @@ ApiProber is not Cloudprober, probe-rs, an uptime monitor, a hardware debug
 probe, or a semantic code-search engine. It is a local Python CLI for documenting
 authorized REST API surfaces with read-only probing and SQLite persistence.
 
-## Last-checked: 2026-08-06
+Verified locally on 2026-09-05: 93 passed, 1 skipped.
+
+## Last-checked: 2026-09-05

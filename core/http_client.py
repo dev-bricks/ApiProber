@@ -11,6 +11,8 @@ B36-Fix (SQ080): Timeout-Bug behoben:
   - Timeout-Werte ueber Config steuerbar (connect_timeout_s, read_timeout_s)
 """
 import json
+import ipaddress
+import re
 import socket
 import time
 import ssl
@@ -18,7 +20,150 @@ import urllib.request
 import urllib.error
 import urllib.parse
 from dataclasses import dataclass, field
-from typing import Optional
+
+
+_PERCENT_ESCAPE = re.compile(r"%[0-9A-Fa-f]{2}")
+_ENCODED_AMBIGUITY = re.compile(r"%(?:25|2e|2f|5c)", re.IGNORECASE)
+
+
+def _invalid_url(reason):
+    """Return a secret-safe validation error that never repeats the raw URL."""
+    raise ValueError(reason)
+
+
+def _canonical_host(host):
+    """Canonicalize DNS, IPv4, or IPv6 hosts without blocking local targets."""
+    if not host or "%" in host:
+        _invalid_url("Host fehlt oder enthält eine nicht unterstützte Zonenangabe")
+
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        if ":" in host or all(char.isdigit() or char == "." for char in host):
+            _invalid_url("IP-Adresse ist ungültig")
+        if host.endswith(".."):
+            _invalid_url("Hostname enthält leere Labels")
+        dns_host = host[:-1] if host.endswith(".") else host
+        try:
+            ascii_host = dns_host.encode("idna").decode("ascii").lower()
+        except UnicodeError:
+            _invalid_url("IDN-Hostname ist ungültig")
+        if any(ord(char) > 127 for char in dns_host):
+            if ascii_host.encode("ascii").decode("idna").lower() != dns_host.lower():
+                _invalid_url("IDN-Hostname würde mehrdeutig abgebildet")
+        if not ascii_host or len(ascii_host) > 253:
+            _invalid_url("Hostname ist ungültig")
+        labels = ascii_host.split(".")
+        if any(
+            not label
+            or len(label) > 63
+            or label.startswith("-")
+            or label.endswith("-")
+            or not all(char.isalnum() or char == "-" for char in label)
+            for label in labels
+        ):
+            _invalid_url("Hostname ist ungültig")
+        for label in labels:
+            if label.startswith("xn--"):
+                try:
+                    decoded_label = label.encode("ascii").decode("idna")
+                    if decoded_label.encode("idna").decode("ascii").lower() != label:
+                        _invalid_url("IDN-A-Label ist nicht kanonisch")
+                except UnicodeError:
+                    _invalid_url("IDN-A-Label ist ungültig")
+        return ascii_host, False
+    return address.compressed.lower(), address.version == 6
+
+
+def _normalize_http_url(url, base_url=False):
+    """Validate and canonicalize an HTTP(S) URL without exposing rejected input."""
+    if not isinstance(url, str) or not url:
+        _invalid_url("URL fehlt")
+    if "\\" in url or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in url):
+        _invalid_url("Whitespace, Steuerzeichen und Backslashes sind nicht erlaubt")
+
+    try:
+        parsed = urllib.parse.urlsplit(url)
+    except ValueError:
+        _invalid_url("URL-Syntax ist ungültig")
+
+    scheme = parsed.scheme.lower()
+    if scheme not in ("http", "https"):
+        _invalid_url("nur absolute HTTP(S)-URLs sind erlaubt")
+    if not parsed.netloc or "@" in parsed.netloc or parsed.username is not None or parsed.password is not None:
+        _invalid_url("eingebettete Zugangsdaten sind nicht erlaubt")
+    if "#" in url:
+        _invalid_url("Fragmente sind nicht erlaubt")
+    if base_url and "?" in url:
+        _invalid_url("Query-Parameter sind in einer Basis-URL nicht erlaubt")
+
+    try:
+        port = parsed.port
+        host, is_ipv6 = _canonical_host(parsed.hostname)
+    except ValueError as exc:
+        _invalid_url(str(exc))
+    if port == 0:
+        _invalid_url("Port muss zwischen 1 und 65535 liegen")
+
+    path = parsed.path
+    without_escapes = _PERCENT_ESCAPE.sub("", path)
+    if "%" in without_escapes:
+        _invalid_url("Pfad enthält eine ungültige Prozentkodierung")
+    decoded_path = urllib.parse.unquote(path)
+    if (
+        _ENCODED_AMBIGUITY.search(path)
+        or "\\" in decoded_path
+        or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in decoded_path)
+        or "//" in decoded_path
+        or any(segment in (".", "..") for segment in decoded_path.split("/"))
+    ):
+        _invalid_url("Pfad enthält eine mehrdeutige Konstruktion")
+    if path and not path.startswith("/"):
+        _invalid_url("Pfad muss absolut sein")
+
+    path = urllib.parse.quote(path, safe="/%:@!$&'()*+,;=-._~")
+    path = _PERCENT_ESCAPE.sub(lambda match: match.group(0).upper(), path)
+    query = urllib.parse.quote(parsed.query, safe="/%:?@!$&'()*+,;=-._~")
+    query = _PERCENT_ESCAPE.sub(lambda match: match.group(0).upper(), query)
+    if base_url:
+        path = path.rstrip("/")
+
+    default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
+    host_for_netloc = f"[{host}]" if is_ipv6 else host
+    netloc = host_for_netloc if port is None or default_port else f"{host_for_netloc}:{port}"
+    return urllib.parse.urlunsplit((scheme, netloc, path, query, ""))
+
+
+def normalize_base_url(url):
+    """Return the canonical, persistence-safe HTTP(S) base URL."""
+    return _normalize_http_url(url, base_url=True)
+
+
+def _url_origin(url):
+    """Return the canonical security origin for redirect comparisons."""
+    parsed = urllib.parse.urlsplit(_normalize_http_url(url))
+    default_port = 443 if parsed.scheme == "https" else 80
+    return parsed.scheme, parsed.hostname, parsed.port or default_port
+
+
+class _SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Validate redirect targets and keep credentials on the original origin."""
+
+    _SENSITIVE_HEADERS = {
+        "authorization", "proxy-authorization", "x-api-key", "cookie"
+    }
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        canonical_url = _normalize_http_url(newurl)
+        redirected = super().redirect_request(
+            req, fp, code, msg, headers, canonical_url
+        )
+        if redirected is not None and _url_origin(req.full_url) != _url_origin(canonical_url):
+            for container in (redirected.headers, redirected.unredirected_hdrs):
+                for header_name in list(container):
+                    if header_name.lower() in self._SENSITIVE_HEADERS:
+                        del container[header_name]
+        return redirected
 
 
 @dataclass
@@ -88,6 +233,10 @@ class HttpClient:
         self._last_request_time = 0.0
         self._request_count = 0
         self._ssl_ctx = ssl.create_default_context()
+        self._opener = urllib.request.build_opener(
+            _SafeRedirectHandler(),
+            urllib.request.HTTPSHandler(context=self._ssl_ctx),
+        )
 
     @property
     def request_count(self):
@@ -95,6 +244,7 @@ class HttpClient:
 
     def request(self, url, method="GET", body=None, extra_headers=None):
         """HTTP-Request mit Rate-Limiting und Retry. Gibt HttpResponse zurueck."""
+        url = _normalize_http_url(url)
         self._rate_limit()
 
         headers = {
@@ -133,9 +283,9 @@ class HttpClient:
             self._request_count += 1
 
             try:
-                with urllib.request.urlopen(req, timeout=self.timeout,
-                                            context=self._ssl_ctx) as resp:
+                with self._opener.open(req, timeout=self.timeout) as resp:
                     elapsed = int((time.monotonic() - start) * 1000)
+                    response_url = _normalize_http_url(resp.geturl())
                     resp_headers = dict(resp.headers)
                     content_type = resp_headers.get("Content-Type", "")
                     raw_body = resp.read()
@@ -150,7 +300,7 @@ class HttpClient:
                     is_json = "json" in content_type.lower()
 
                     return HttpResponse(
-                        url=url, method=method,
+                        url=response_url, method=method,
                         status_code=resp.status,
                         headers=resp_headers,
                         body=body_str,

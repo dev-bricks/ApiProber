@@ -4,13 +4,13 @@ ApiProber.discovery.orchestrator -- Zentrale Steuerung aller Strategien
 Koordiniert OpenAPI-Detection, Wordlist, Pattern und Response-Driven.
 """
 import json
-import sys
+import ipaddress
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from ..core.config import (load_config, get_db_path, redact_config,
-                            _deep_merge, REDACTED_PLACEHOLDER)
+from ..core.config import load_config, get_db_path, redact_config, _deep_merge
 from ..core.database import Database
-from ..core.http_client import HttpClient
+from ..core.http_client import HttpClient, normalize_base_url
 from ..core.robots import RobotsChecker
 from ..core.schema_extractor import extract_schema_from_body, extract_params_from_error
 from .openapi_detect import detect_openapi, extract_endpoints_from_spec
@@ -25,9 +25,17 @@ class ProbeOrchestrator:
 
     def __init__(self, config=None):
         self.config = config or load_config()
-        self.db = Database(get_db_path(self.config))
+        self._db = None
+        self._db_path = get_db_path(self.config)
         self.client = HttpClient(self.config)
         self._stop_requested = False
+
+    @property
+    def db(self):
+        """Initialize persistence lazily, after a probe target passed validation."""
+        if self._db is None:
+            self._db = Database(self._db_path)
+        return self._db
 
     def probe(self, url, depth=None):
         """Hauptmethode: Vollstaendiges Probing eines Service.
@@ -42,7 +50,12 @@ class ProbeOrchestrator:
         if depth is not None:
             self.config["max_depth"] = depth
 
-        base_url = url.rstrip("/")
+        try:
+            base_url = normalize_base_url(url)
+        except ValueError as exc:
+            error = f"Ungültige Basis-URL: {exc}"
+            print(f"[FEHLER] {error}")
+            return {"error": error}
         service_name = self._derive_service_name(base_url)
         max_requests = self.config.get("max_requests", 500)
         skip_destructive = self.config.get("skip_destructive", True)
@@ -297,30 +310,41 @@ class ProbeOrchestrator:
             return None
 
         if last_run["status"] == "completed":
-            print(f"Letzter Run bereits abgeschlossen. Starte neuen Probe.")
+            print("Letzter Run bereits abgeschlossen. Starte neuen Probe.")
 
         # Config aus letztem Run laden (auth.value ist dort redigiert gespeichert)
         try:
             run_config = json.loads(last_run.get("config_json", "{}"))
         except (json.JSONDecodeError, ValueError):
             run_config = {}
+        if not isinstance(run_config, dict):
+            run_config = {}
 
         if run_config:
-            run_auth = run_config.get("auth")
-            if isinstance(run_auth, dict) and run_auth.get("value") == REDACTED_PLACEHOLDER:
-                # Credentials werden nie persistiert -- Wert aus der aktuellen
-                # Config beziehen (config.json / config.local.json / Env)
-                current_value = self.config.get("auth", {}).get("value", "")
-                if current_value:
-                    run_auth["value"] = current_value
-                else:
-                    run_auth["value"] = ""
-                    print("  [WARN] Der gespeicherte Run nutzte Authentifizierung, aber "
-                          "in der aktuellen Config/Umgebung (APIPROBER_AUTH_VALUE) ist "
-                          "kein Auth-Wert gesetzt -- Probing laeuft ohne Auth.")
+            current_auth = self.config.get("auth", {})
+            current_value = current_auth.get("value", "") if isinstance(current_auth, dict) else ""
+            current_type = current_auth.get("type", "") if isinstance(current_auth, dict) else ""
+            run_auth = run_config.pop("auth", None)
+            stored_value = ""
+            if isinstance(run_auth, dict):
+                # Persistierte Werte nie wieder als Credential verwenden. Das gilt
+                # auch für historische Klartext-Runs vor Einführung der Redaction.
+                stored_value = run_auth.pop("value", "")
+                if run_auth:
+                    run_config["auth"] = run_auth
+            if not isinstance(self.config.get("auth"), dict):
+                self.config["auth"] = {}
             # Deep-Merge statt flachem update(): verschachtelte Keys wie
             # 'auth' werden gemergt statt komplett ersetzt
             _deep_merge(self.config, run_config)
+            effective_auth = self.config.setdefault("auth", {})
+            effective_auth["value"] = current_value
+            if current_value and current_type and current_type != "none":
+                effective_auth["type"] = current_type
+            if stored_value and not current_value:
+                print("  [WARN] Der gespeicherte Run nutzte Authentifizierung, aber "
+                      "in der aktuellen Config/Umgebung (APIPROBER_AUTH_VALUE) ist "
+                      "kein Auth-Wert gesetzt -- Probing laeuft ohne Auth.")
 
         return self.probe(service["base_url"])
 
@@ -378,13 +402,19 @@ class ProbeOrchestrator:
 
     def _derive_service_name(self, url):
         """Leitet einen Service-Namen aus der URL ab."""
-        from urllib.parse import urlparse
-        parsed = urlparse(url)
+        parsed = urlsplit(url)
         host = parsed.hostname or "unknown"
-        # Subdomains entfernen fuer kurzen Namen
-        parts = host.split(".")
-        if len(parts) >= 2:
-            name = parts[-2]  # z.B. "jsonplaceholder" aus "jsonplaceholder.typicode.com"
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            # Bestehende DNS-Namenssemantik beibehalten.
+            parts = host.split(".")
+            name = parts[-2] if len(parts) >= 2 else host
         else:
-            name = host
+            safe_address = address.compressed.replace(":", "-").replace(".", "-").strip("-")
+            name = f"ipv{address.version}-{safe_address or 'unspecified'}"
+        if parsed.port is not None:
+            name = f"{name}-{parsed.port}"
+        if not name:
+            name = "service"
         return name

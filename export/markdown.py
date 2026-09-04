@@ -16,6 +16,10 @@ def export_markdown(db, service, output_path):
         service: Service-dict aus DB
         output_path: Ziel-Pfad fuer .md-Datei
     """
+    from ..core.http_client import normalize_base_url
+
+    service = dict(service)
+    service["base_url"] = normalize_base_url(service["base_url"])
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -55,8 +59,8 @@ def export_markdown(db, service, output_path):
     # Statistiken
     lines.append("## Ueberblick")
     lines.append("")
-    lines.append(f"| Metrik | Wert |")
-    lines.append(f"|--------|------|")
+    lines.append("| Metrik | Wert |")
+    lines.append("|--------|------|")
     lines.append(f"| Endpoints | {stats['endpoints']} |")
     lines.append(f"| Responses | {stats['responses']} |")
     lines.append(f"| Parameter | {stats['parameters']} |")

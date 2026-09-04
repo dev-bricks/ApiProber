@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05
+
+- **Credential safety**: redacted configuration output and persistence sinks, disabled secret-bearing CLI arguments, and added hidden interactive credential input for probes, resume, and local configuration.
+- **Probe target boundary**: require canonical HTTP(S) targets without embedded credentials or ambiguous paths; validate every redirect and remove authentication headers on cross-origin redirects.
+- **Public metadata**: aligned the canonical repository URL, changed the module status from `released` to `staging` because the public repository has no GitHub release, and recorded the Git repository as the source of truth.
+- **Verification**: 93 tests passed and 1 opt-in network test was skipped; changed Python files also passed scoped Ruff and compile checks.
+
 ## 2026-08-06
 
 - **Discoverability & Marketing Audit (Path B)**: Updated `llms.txt` `Last-checked` date to `2026-08-06`. Extended `README.md` and `README_de.md` with Ecosystem (`dev-bricks`) and Umbrella (`open-bricks`) Shields.io badges as well as GFM RAG callout tips for `llms.txt`. Verified test suite (21 passed, 1 skipped).

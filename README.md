@@ -9,7 +9,7 @@
 # ApiProber -- Passive API Discovery and Documentation Tool
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![Pytest 21 passed](https://img.shields.io/badge/pytest-21_passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest 93 passed, 1 skipped](https://img.shields.io/badge/pytest-93_passed%2C_1_skipped-brightgreen.svg)](https://docs.pytest.org/)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-success.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LLM-Ready](https://img.shields.io/badge/LLM--Ready-llms.txt-success.svg)](llms.txt)
@@ -76,8 +76,8 @@ fuzzer. Use it only on APIs you own or are allowed to assess.
 No installation required -- works with Python 3.8+ standard library only.
 
 ```bash
-git clone https://github.com/dev-bricks/apiprober.git
-cd apiprober
+git clone https://github.com/dev-bricks/ApiProber.git
+cd ApiProber
 
 # Run directly from the repository root
 python api_prober.py --help
@@ -100,8 +100,8 @@ python api_prober.py probe https://jsonplaceholder.typicode.com
 # Deep probe with custom delay
 python api_prober.py probe https://api.example.com --depth 2 --delay-ms 1000
 
-# Authenticated probe
-python api_prober.py probe https://api.example.com --auth-type bearer --auth-value "YOUR_TOKEN"
+# Authenticated probe (the prompt keeps the token out of process arguments)
+python api_prober.py probe https://api.example.com --auth-type bearer --auth-prompt
 ```
 
 ### Manage Services
@@ -140,20 +140,26 @@ python api_prober.py config --set auth.type bearer
 
 ### Credential Handling
 
-Credentials are kept out of the tracked `config.json` and out of the local
-SQLite database:
+Credentials are kept out of process arguments, command output, the tracked
+`config.json`, probe-run records, and exports:
 
 - **Recommended:** set the environment variables `APIPROBER_AUTH_VALUE` (and
   optionally `APIPROBER_AUTH_TYPE`). They take precedence over all config
   files and are never written to disk.
-- `python api_prober.py config --set auth.value "TOKEN"` writes the value to
-  `config.local.json` -- a gitignored overlay file next to `config.json` --
-  never to the tracked `config.json`.
+- For an interactive one-off probe or resume, use `--auth-prompt`. To save a
+  credential deliberately, use `python api_prober.py config --set-auth`; the
+  hidden prompt writes only to gitignored `config.local.json`.
+- Legacy secret-bearing forms (`--auth-value TOKEN` and
+  `config --set auth.value TOKEN`) are rejected without echoing the value.
+- `config --show` always redacts `auth.value`.
 - Config resolution order: defaults -> `config.json` -> `config.local.json`
   -> environment variables.
 - Probe run configurations stored in the SQLite database have `auth.value`
   redacted (`***REDACTED***`); `resume` re-reads the credential from the
   current config or environment.
+- Probe targets and every redirect must be canonical HTTP(S) URLs without
+  embedded credentials. Cross-origin redirects never receive configured auth
+  headers.
 
 ---
 
@@ -309,7 +315,7 @@ python -m pytest -q test_smoke.py
 
 Lukas Geiger -- [github.com/lukisch](https://github.com/lukisch)
 
-Repository -- [dev-bricks/apiprober](https://github.com/dev-bricks/apiprober)
+Repository -- [dev-bricks/ApiProber](https://github.com/dev-bricks/ApiProber)
 
 ---
 
