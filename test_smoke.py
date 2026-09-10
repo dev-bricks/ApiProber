@@ -33,7 +33,7 @@ class TestApiProberImport:
         """Test: api_prober Modul kann importiert werden."""
         try:
             import api_prober
-            assert True
+            assert api_prober is not None
         except ImportError as e:
             pytest.fail(f"api_prober konnte nicht importiert werden: {e}")
 
@@ -49,6 +49,8 @@ class TestApiProberImport:
             assert ProbeOrchestrator is not None
             from ApiProber.discovery import wordlist
             from ApiProber.discovery import openapi_detect
+            assert wordlist is not None
+            assert openapi_detect is not None
         except ImportError as e:
             pytest.fail(f"discovery Modul fehlt: {e}")
 
@@ -57,6 +59,8 @@ class TestApiProberImport:
         try:
             from export import markdown
             from export import json_export
+            assert markdown is not None
+            assert json_export is not None
         except ImportError as e:
             pytest.fail(f"export Modul fehlt: {e}")
 

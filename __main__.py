@@ -8,6 +8,6 @@ _parent = str(PACKAGE_DIR.parent)
 if _parent not in sys.path:
     sys.path.insert(0, _parent)
 
-from ApiProber.api_prober import main
+from ApiProber.api_prober import main  # noqa: E402
 
 sys.exit(main())

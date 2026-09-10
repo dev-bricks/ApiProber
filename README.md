@@ -8,8 +8,9 @@
 
 # ApiProber -- Passive API Discovery and Documentation Tool
 
+[![CI](https://github.com/dev-bricks/ApiProber/actions/workflows/tests.yml/badge.svg)](https://github.com/dev-bricks/ApiProber/actions/workflows/tests.yml)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![Pytest 93 passed, 1 skipped](https://img.shields.io/badge/pytest-93_passed%2C_1_skipped-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest 100 passed, 1 skipped](https://img.shields.io/badge/pytest-100_passed%2C_1_skipped-brightgreen.svg)](https://docs.pytest.org/)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-success.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LLM-Ready](https://img.shields.io/badge/LLM--Ready-llms.txt-success.svg)](llms.txt)

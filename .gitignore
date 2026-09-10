@@ -45,5 +45,24 @@ config.local.json
 Thumbs.db
 desktop.ini
 
+# Test, Lint & Coverage Caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Multi-Host Sync & Conflict Artifacts
+*-conflict-*
+*.sync-temp-*
+*-ASUS-GEI.*
+*-WORKSTATION-LG.*
+* (kopie)*
+* (copy)*
+
 # Multi-Agent Lock-System (lokal, nie committen)
+LOCK
+LOCK.*
+*.lock
 LOCK*.txt
+LOCK.permissions.json

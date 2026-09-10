@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-10
+
+- **CI Matrix Hardening (Path A)**: Upgraded `.github/workflows/tests.yml` to official `@v4`/`@v5` GitHub Actions, added cross-platform testing on Ubuntu and Windows across Python 3.10–3.13, configured job concurrency with `cancel-in-progress: true`, and added bytecode validation (`compileall`) and CLI smoke verification steps.
+- **PEP 621 Metadata & Tooling**: Standardized `pyproject.toml` with project URLs (`Changelog`, `Documentation`, `Parent Organization`, `Umbrella Ecosystem`), declared `test` and `dev` optional dependencies, and configured pytest and ruff linters.
+- **Repository Hygiene & Contract Testing**: Added `tests/test_repository_hygiene.py` with 7 regression contract tests covering metadata, version parity, CI matrix coverage, multi-host sync/lock exclusion in `.gitignore`, CLI entry point, and module manifest integrity.
+- **Documentation & Verification**: Updated badges and verification notes across `README.md`, `README_de.md`, and `llms.txt`. 100 tests passed, 1 skipped. Ruff lint and Python compileall checks clean.
+
 ## 2026-09-05
 
 - **Credential safety**: redacted configuration output and persistence sinks, disabled secret-bearing CLI arguments, and added hidden interactive credential input for probes, resume, and local configuration.

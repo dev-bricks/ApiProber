@@ -17,6 +17,7 @@ keywords = ["api", "api-discovery", "rest-api", "openapi", "documentation", "pas
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -26,15 +27,29 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Testing",
     "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Security",
 ]
 
 [project.urls]
-Homepage = "https://github.com/dev-bricks/apiprober"
-Repository = "https://github.com/dev-bricks/apiprober"
-Issues = "https://github.com/dev-bricks/apiprober/issues"
+Homepage = "https://github.com/dev-bricks/ApiProber"
+Repository = "https://github.com/dev-bricks/ApiProber"
+Issues = "https://github.com/dev-bricks/ApiProber/issues"
+Changelog = "https://github.com/dev-bricks/ApiProber/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/dev-bricks/ApiProber#readme"
+"Parent Organization" = "https://github.com/dev-bricks"
+"Umbrella Ecosystem" = "https://github.com/open-bricks"
 
 [project.scripts]
 apiprober = "ApiProber.api_prober:main"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
 
 [tool.setuptools]
 include-package-data = false
@@ -52,3 +67,18 @@ ApiProber = [
     "*.ico",
     "wordlists/*.txt",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["test_smoke.py", "test_security.py", "tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra -v"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
