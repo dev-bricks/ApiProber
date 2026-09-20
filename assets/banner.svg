@@ -1,0 +1,563 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 680" width="100%" height="auto">
+  <defs>
+    <!-- Background Nocturnal Sky Gradient -->
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050814" />
+      <stop offset="35%" stop-color="#0a0f26" />
+      <stop offset="70%" stop-color="#0f1638" />
+      <stop offset="100%" stop-color="#080c1d" />
+    </linearGradient>
+
+    <!-- Deep Midnight Vignette -->
+    <radialGradient id="vignetteGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="40%" stop-color="#000000" stop-opacity="0" />
+      <stop offset="100%" stop-color="#02040a" stop-opacity="0.65" />
+    </radialGradient>
+
+    <!-- Warm Celestial Moon Halos -->
+    <radialGradient id="moonAuraOuter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="0.28" />
+      <stop offset="45%" stop-color="#fde047" stop-opacity="0.10" />
+      <stop offset="75%" stop-color="#eab308" stop-opacity="0.03" />
+      <stop offset="100%" stop-color="#0a0f26" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="moonAuraInner" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#fef9c3" stop-opacity="0.4" />
+      <stop offset="85%" stop-color="#fde047" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#fde047" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="moonSurface" x1="0.1" y1="0.1" x2="0.9" y2="0.9">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="30%" stop-color="#fffef0" />
+      <stop offset="70%" stop-color="#fef9c3" />
+      <stop offset="100%" stop-color="#fef08a" />
+    </linearGradient>
+
+    <!-- Bat Wing & Body Gradients -->
+    <linearGradient id="batWingFar" x1="1" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="55%" stop-color="#2e1065" />
+      <stop offset="100%" stop-color="#3b0764" />
+    </linearGradient>
+
+    <linearGradient id="batWingNear" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#312e81" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <linearGradient id="batBodyGrad" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#3730a3" />
+      <stop offset="45%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#090d1a" />
+    </linearGradient>
+
+    <linearGradient id="batHeadGrad" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#4338ca" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Warm Moonlight Rim Lighting -->
+    <linearGradient id="rimWarm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fffef0" />
+      <stop offset="50%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#fde047" />
+    </linearGradient>
+
+    <!-- Cyan Ambient Sonar Rim Lighting -->
+    <linearGradient id="rimCyan" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00f5ff" />
+      <stop offset="70%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+
+    <!-- Ear Interior Gradient -->
+    <linearGradient id="earInnerGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="60%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#c7d2fe" />
+    </linearGradient>
+
+    <!-- Sonar Forward Waves Gradient -->
+    <linearGradient id="sonarBeamGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00f5ff" />
+      <stop offset="45%" stop-color="#38bdf8" />
+      <stop offset="85%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.3" />
+    </linearGradient>
+
+    <!-- Echo Returning Waves Gradients -->
+    <linearGradient id="echoWarmGrad" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="80%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#eab308" stop-opacity="0.2" />
+    </linearGradient>
+
+    <linearGradient id="echoWhiteGrad" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="45%" stop-color="#e0f2fe" />
+      <stop offset="80%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2" />
+    </linearGradient>
+
+    <linearGradient id="echoMintGrad" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#a7f3d0" />
+      <stop offset="80%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Endpoint Fill & Border Gradients -->
+    <linearGradient id="doorInnerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.8" />
+      <stop offset="60%" stop-color="#0369a1" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#070d1e" stop-opacity="0.9" />
+    </linearGradient>
+
+    <linearGradient id="portBodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#090e1a" />
+    </linearGradient>
+
+    <linearGradient id="nodeBodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#064e3b" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#022c22" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Typographic Gradient -->
+    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#67e8f9" />
+    </linearGradient>
+
+    <linearGradient id="accentBarGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Soft Glow Filters (SVG Standard feGaussianBlur) -->
+    <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="glowWarm" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="7" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="glowStrong" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 1. BASE NOCTURNAL SKY BACKGROUND -->
+  <rect width="2400" height="680" fill="url(#skyGrad)" />
+
+  <!-- Soft Distant Cosmic Atmosphere / Nebula Clouds -->
+  <ellipse cx="1350" cy="300" rx="750" ry="260" fill="#1e1b4b" opacity="0.45" filter="url(#glowStrong)" />
+  <ellipse cx="2050" cy="340" rx="360" ry="240" fill="#0c2044" opacity="0.5" filter="url(#glowStrong)" />
+  <ellipse cx="450" cy="340" rx="420" ry="220" fill="#0f172a" opacity="0.4" filter="url(#glowStrong)" />
+
+  <!-- 2. STARRY NIGHT SKY (Clean, tranquil geometric stars) -->
+  <g id="stars" opacity="0.65">
+    <circle cx="220" cy="90" r="1.5" fill="#ffffff" opacity="0.5" />
+    <circle cx="380" cy="140" r="2.2" fill="#bae6fd" opacity="0.7" />
+    <circle cx="160" cy="460" r="1.8" fill="#ffffff" opacity="0.4" />
+    <circle cx="520" cy="110" r="2.0" fill="#fef08a" opacity="0.6" />
+    <circle cx="740" cy="80" r="1.5" fill="#ffffff" opacity="0.5" />
+    <circle cx="890" cy="150" r="2.5" fill="#bae6fd" opacity="0.8" />
+    <circle cx="980" cy="90" r="1.8" fill="#ffffff" opacity="0.45" />
+    <circle cx="1100" cy="60" r="2.2" fill="#fef08a" opacity="0.75" />
+    <circle cx="1480" cy="75" r="2.0" fill="#ffffff" opacity="0.6" />
+    <circle cx="1620" cy="110" r="1.5" fill="#bae6fd" opacity="0.5" />
+    <circle cx="1750" cy="65" r="2.4" fill="#fef08a" opacity="0.7" />
+    <circle cx="1880" cy="125" r="1.8" fill="#ffffff" opacity="0.5" />
+    <circle cx="2020" cy="70" r="2.2" fill="#bae6fd" opacity="0.65" />
+    <circle cx="2260" cy="110" r="2.0" fill="#ffffff" opacity="0.7" />
+    <circle cx="2340" cy="190" r="1.6" fill="#fef08a" opacity="0.55" />
+    
+    <!-- Lower sky stars -->
+    <circle cx="260" cy="580" r="1.8" fill="#ffffff" opacity="0.4" />
+    <circle cx="680" cy="600" r="2.2" fill="#bae6fd" opacity="0.5" />
+    <circle cx="1020" cy="590" r="1.5" fill="#ffffff" opacity="0.4" />
+    <circle cx="1420" cy="610" r="2.0" fill="#bae6fd" opacity="0.5" />
+    <circle cx="1690" cy="595" r="1.8" fill="#fef08a" opacity="0.6" />
+    <circle cx="1950" cy="620" r="2.2" fill="#ffffff" opacity="0.5" />
+    <circle cx="2290" cy="570" r="1.6" fill="#bae6fd" opacity="0.45" />
+
+    <!-- A few sparkling 4-point accent stars -->
+    <path d="M 890 143 L 892 150 L 899 150 L 893 153 L 895 160 L 890 155 L 885 160 L 887 153 L 881 150 L 888 150 Z" fill="#ffffff" opacity="0.8" />
+    <path d="M 1750 58 L 1752 65 L 1759 65 L 1753 68 L 1755 75 L 1750 70 L 1745 75 L 1747 68 L 1741 65 L 1748 65 Z" fill="#fef08a" opacity="0.75" />
+    <path d="M 520 103 L 522 110 L 529 110 L 523 113 L 525 120 L 520 115 L 515 120 L 517 113 L 511 110 L 518 110 Z" fill="#bae6fd" opacity="0.7" />
+  </g>
+
+  <!-- 3. THE MOON (Warm moonlight accent) -->
+  <g id="moon-group">
+    <!-- Outer atmospheric moon glow -->
+    <circle cx="1180" cy="240" r="380" fill="url(#moonAuraOuter)" />
+    <!-- Mid luminous aura -->
+    <circle cx="1180" cy="240" r="240" fill="url(#moonAuraInner)" />
+    <!-- Moon Body Disc (Radius = 150px, Diameter = 300px) -->
+    <circle cx="1180" cy="240" r="150" fill="url(#moonSurface)" filter="url(#glowWarm)" />
+    
+    <!-- Stylized Moon Surface Details (Subtle Maria) -->
+    <path d="M 1110 185 Q 1155 165 1195 190 Q 1175 235 1125 225 Z" fill="#ca8a04" opacity="0.12" />
+    <path d="M 1215 215 Q 1255 195 1285 225 Q 1275 265 1225 255 Z" fill="#ca8a04" opacity="0.11" />
+    <path d="M 1140 255 Q 1180 245 1205 285 Q 1165 315 1135 285 Z" fill="#ca8a04" opacity="0.10" />
+    <circle cx="1225" cy="175" r="14" fill="#ca8a04" opacity="0.08" />
+    <circle cx="1105" cy="250" r="18" fill="#ca8a04" opacity="0.08" />
+  </g>
+
+  <!-- 4. RETURNING ECHO WAVES (Prallen an Zielen ab und kommen zurueck) -->
+  <!-- Rendered behind the forward beam for depth and luminescence -->
+  <g id="echo-waves">
+    <!-- ECHOES FROM ENDPOINT 1 (Abstract Doorway at x=2080, y=190) - Warm Gold/Cream -->
+    <g id="echo-door" stroke="url(#echoWarmGrad)" fill="none" stroke-linecap="round">
+      <!-- Arcs opening towards the LEFT (angles ~140 to 220 deg) -->
+      <!-- R=65 -->
+      <path d="M 2030 148 A 65 65 0 0 0 2030 232" stroke-width="4.5" stroke-dasharray="8 6" opacity="0.95" />
+      <!-- R=130 -->
+      <path d="M 1980 106 A 130 130 0 0 0 1980 274" stroke-width="4.0" stroke-dasharray="10 7" opacity="0.9" />
+      <!-- R=210 -->
+      <path d="M 1919 55 A 210 210 0 0 0 1919 325" stroke-width="3.5" opacity="0.8" />
+      <!-- R=300 -->
+      <path d="M 1850 -3 A 300 300 0 0 0 1850 383" stroke-width="3.0" stroke-dasharray="12 8" opacity="0.65" />
+      <!-- R=400 -->
+      <path d="M 1773 -67 A 400 400 0 0 0 1773 447" stroke-width="2.5" opacity="0.45" />
+      <!-- R=520 -->
+      <path d="M 1681 -144 A 520 520 0 0 0 1681 524" stroke-width="2.0" opacity="0.3" />
+    </g>
+
+    <!-- ECHOES FROM ENDPOINT 2 (Abstract Interface Port at x=2220, y=340) - Crisp Pure White & Cyan -->
+    <g id="echo-port" stroke="url(#echoWhiteGrad)" fill="none" stroke-linecap="round">
+      <!-- Arcs opening towards the LEFT (angles ~145 to 215 deg) -->
+      <!-- R=75 -->
+      <path d="M 2158 297 A 75 75 0 0 0 2158 383" stroke-width="5.0" opacity="0.95" />
+      <!-- R=155 -->
+      <path d="M 2093 251 A 155 155 0 0 0 2093 429" stroke-width="4.5" stroke-dasharray="12 7" opacity="0.85" />
+      <!-- R=250 -->
+      <path d="M 2015 197 A 250 250 0 0 0 2015 483" stroke-width="4.0" stroke-dasharray="14 8" opacity="0.75" />
+      <!-- R=360 -->
+      <path d="M 1925 133 A 360 360 0 0 0 1925 547" stroke-width="3.5" opacity="0.6" />
+      <!-- R=480 -->
+      <path d="M 1827 65 A 480 480 0 0 0 1827 615" stroke-width="2.5" stroke-dasharray="16 10" opacity="0.4" />
+      <!-- R=620 -->
+      <path d="M 1712 -15 A 620 620 0 0 0 1712 695" stroke-width="2.0" opacity="0.25" />
+    </g>
+
+    <!-- ECHOES FROM ENDPOINT 3 (Abstract Node Hub at x=2090, y=495) - Bright Mint & Emerald -->
+    <g id="echo-node" stroke="url(#echoMintGrad)" fill="none" stroke-linecap="round">
+      <!-- Arcs opening towards the LEFT (angles ~135 to 210 deg) -->
+      <!-- R=65 -->
+      <path d="M 2044 449 A 65 65 0 0 0 2044 541" stroke-width="4.5" stroke-dasharray="8 5" opacity="0.95" />
+      <!-- R=140 -->
+      <path d="M 1991 396 A 140 140 0 0 0 1991 594" stroke-width="4.0" stroke-dasharray="10 7" opacity="0.85" />
+      <!-- R=225 -->
+      <path d="M 1931 336 A 225 225 0 0 0 1931 654" stroke-width="3.5" opacity="0.7" />
+      <!-- R=325 -->
+      <path d="M 1860 265 A 325 325 0 0 0 1860 725" stroke-width="3.0" stroke-dasharray="12 8" opacity="0.5" />
+      <!-- R=440 -->
+      <path d="M 1779 184 A 440 440 0 0 0 1779 806" stroke-width="2.0" opacity="0.3" />
+    </g>
+  </g>
+
+  <!-- 5. FORWARD SONAR WAVES (Konzentrische Schallwellen-Boegen aus Echolot) -->
+  <!-- Originates from Bat mouth at (1365, 308), sweeps rightward across the dark sky -->
+  <g id="sonar-waves" stroke="url(#sonarBeamGrad)" fill="none" stroke-linecap="round">
+    <!-- Pulse Center Glow at mouth -->
+    <circle cx="1365" cy="308" r="9" fill="#00f5ff" filter="url(#glowCyan)" opacity="0.9" />
+    <circle cx="1365" cy="308" r="4" fill="#ffffff" />
+
+    <!-- Wave 1: R=110, angle -38 to +38 deg (cos=0.788, sin=0.616) -->
+    <path d="M 1452 240 A 110 110 0 0 1 1452 376" stroke-width="4.5" opacity="0.95" />
+    
+    <!-- Wave 2: R=190, angle -37 to +37 deg (cos=0.799, sin=0.602) -->
+    <path d="M 1517 194 A 190 190 0 0 1 1517 422" stroke-width="5.0" opacity="0.9" />
+    <path d="M 1517 194 A 190 190 0 0 1 1517 422" stroke-width="2.0" stroke="#ffffff" opacity="0.7" />
+
+    <!-- Intermediate Pulse Dash 1 -->
+    <path d="M 1572 153 A 260 260 0 0 1 1572 463" stroke-width="3.0" stroke-dasharray="14 10" opacity="0.6" />
+
+    <!-- Wave 3: R=340, angle -36 to +36 deg (cos=0.809, sin=0.588) -->
+    <path d="M 1640 108 A 340 340 0 0 1 1640 508" stroke-width="5.5" opacity="0.85" />
+    <path d="M 1640 108 A 340 340 0 0 1 1640 508" stroke-width="2.0" stroke="#ffffff" opacity="0.6" />
+
+    <!-- Intermediate Pulse Dash 2 -->
+    <path d="M 1712 62 A 430 430 0 0 1 1712 554" stroke-width="3.5" stroke-dasharray="18 12" opacity="0.55" />
+
+    <!-- Wave 4: R=530, angle -34 to +34 deg (cos=0.829, sin=0.559) -->
+    <path d="M 1804 12 A 530 530 0 0 1 1804 604" stroke-width="6.0" opacity="0.8" />
+    <path d="M 1804 12 A 530 530 0 0 1 1804 604" stroke-width="2.2" stroke="#ffffff" opacity="0.5" />
+
+    <!-- Intermediate Pulse Dash 3 -->
+    <path d="M 1893 -27 A 640 640 0 0 1 1893 643" stroke-width="4.0" stroke-dasharray="22 14" opacity="0.45" />
+
+    <!-- Wave 5: R=760, angle -30 to +30 deg (cos=0.866, sin=0.500) -->
+    <path d="M 2023 -72 A 760 760 0 0 1 2023 688" stroke-width="6.5" opacity="0.75" />
+    <path d="M 2023 -72 A 760 760 0 0 1 2023 688" stroke-width="2.5" stroke="#ffffff" opacity="0.4" />
+
+    <!-- Wave 6: R=920, angle -24 to +24 deg (cos=0.914, sin=0.407) -->
+    <path d="M 2206 -66 A 920 920 0 0 1 2206 682" stroke-width="7.0" opacity="0.65" />
+  </g>
+
+  <!-- 6. ABSTRACT UNLABELED ENDPOINT TARGETS (Tueren, Ports, Knotenpunkte) -->
+  <g id="endpoints">
+    <!-- TARGET 1: ABSTRACT PORTAL / DOORWAY (Top endpoint at x=2080, y=190) -->
+    <g id="target-doorway" transform="translate(2080, 190)">
+      <!-- Outer soft glow aura -->
+      <rect x="-55" y="-65" width="110" height="130" rx="40" fill="#0284c7" opacity="0.15" filter="url(#glowCyan)" />
+      
+      <!-- Doorway Arch Outer Frame -->
+      <path d="M -40 55 V -15 A 40 40 0 0 1 40 -15 V 55 Z" fill="#091124" stroke="#38bdf8" stroke-width="4" />
+      
+      <!-- Inner Portal Threshold Chamber -->
+      <path d="M -26 55 V -10 A 26 26 0 0 1 26 -10 V 55 Z" fill="url(#doorInnerGrad)" stroke="#67e8f9" stroke-width="2.5" />
+      
+      <!-- Architectural Threshold Base Line -->
+      <line x1="-48" y1="55" x2="48" y2="55" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />
+      
+      <!-- Center Glowing Access Core / Beacon (No text, pure geometry) -->
+      <circle cx="0" cy="5" r="7" fill="#fef08a" filter="url(#glowWarm)" />
+      <circle cx="0" cy="5" r="3.5" fill="#ffffff" />
+      <line x1="0" y1="18" x2="0" y2="40" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
+    </g>
+
+    <!-- TARGET 2: ABSTRACT INTERFACE PORT / SOCKET (Middle endpoint at x=2220, y=340) -->
+    <g id="target-port" transform="translate(2220, 340)">
+      <!-- Outer socket glow -->
+      <rect x="-65" y="-45" width="130" height="90" rx="22" fill="#0284c7" opacity="0.15" filter="url(#glowCyan)" />
+      
+      <!-- Port Outer Chassis / Socket Housing -->
+      <rect x="-55" y="-38" width="110" height="76" rx="16" fill="url(#portBodyGrad)" stroke="#38bdf8" stroke-width="4" />
+      
+      <!-- Inner Socket Receptacle Aperture -->
+      <rect x="-38" y="-22" width="76" height="44" rx="9" fill="#040813" stroke="#67e8f9" stroke-width="2.5" />
+      
+      <!-- Abstract Interface Contact Bars (Internal pins) -->
+      <line x1="-22" y1="-12" x2="-22" y2="12" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+      <line x1="-7" y1="-14" x2="-7" y2="14" stroke="#ffffff" stroke-width="4" stroke-linecap="round" filter="url(#glowCyan)" />
+      <line x1="8" y1="-14" x2="8" y2="14" stroke="#ffffff" stroke-width="4" stroke-linecap="round" filter="url(#glowCyan)" />
+      <line x1="23" y1="-12" x2="23" y2="12" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+
+      <!-- Corner Socket Guides (Hardware accents, unlabelled) -->
+      <circle cx="-42" cy="-26" r="2.5" fill="#38bdf8" opacity="0.6" />
+      <circle cx="42" cy="-26" r="2.5" fill="#38bdf8" opacity="0.6" />
+      <circle cx="-42" cy="26" r="2.5" fill="#38bdf8" opacity="0.6" />
+      <circle cx="42" cy="26" r="2.5" fill="#38bdf8" opacity="0.6" />
+    </g>
+
+    <!-- TARGET 3: ABSTRACT NETWORK NODE / CLUSTER HUB (Lower endpoint at x=2090, y=495) -->
+    <g id="target-node" transform="translate(2090, 495)">
+      <!-- Outer aura -->
+      <circle cx="0" cy="0" r="60" fill="#059669" opacity="0.15" filter="url(#glowCyan)" />
+      
+      <!-- Connecting Bus Trunk Lines to Satellite Nodes -->
+      <line x1="0" y1="0" x2="42" y2="-36" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="0" x2="48" y2="34" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="0" x2="-44" y2="38" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="0" x2="-38" y2="-38" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+
+      <!-- Satellite Orbital Nodes -->
+      <circle cx="42" cy="-36" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="3" />
+      <circle cx="42" cy="-36" r="3.5" fill="#38bdf8" />
+
+      <circle cx="48" cy="34" r="9" fill="#0f172a" stroke="#a7f3d0" stroke-width="3" />
+      <circle cx="48" cy="34" r="4" fill="#34d399" />
+
+      <circle cx="-44" cy="38" r="7.5" fill="#0f172a" stroke="#34d399" stroke-width="2.5" />
+      <circle cx="-44" cy="38" r="3" fill="#a7f3d0" />
+
+      <circle cx="-38" cy="-38" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5" />
+      <circle cx="-38" cy="-38" r="3" fill="#67e8f9" />
+
+      <!-- Central Hexagonal Hub -->
+      <polygon points="0,-32 28,-16 28,16 0,32 -28,16 -28,-16" fill="url(#nodeBodyGrad)" stroke="#a7f3d0" stroke-width="4" />
+      
+      <!-- Central Hub Glowing Nucleus -->
+      <circle cx="0" cy="0" r="10" fill="#a7f3d0" filter="url(#glowCyan)" />
+      <circle cx="0" cy="0" r="5" fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- 7. THE BAT HERO (Grosse, freundliche Fledermaus im Nachtflug) -->
+  <!-- Positioned majestically across x=980 to 1660, y=140 to 480 (Wingspan=680px, Height=340px) -->
+  <g id="bat-hero">
+    <!-- FAR / UPPER WING (Left Wing - Arched high into flight) -->
+    <g id="bat-far-wing">
+      <!-- Wing Membrane Geometry -->
+      <path d="M 1265 305 
+               Q 1205 235 1155 200 
+               Q 1095 160 1045 145 
+               Q 1005 130 975 135
+               Q 1015 185 1025 240
+               Q 1075 270 1105 320
+               Q 1155 340 1190 375
+               Q 1230 375 1260 375 Z"
+            fill="url(#batWingFar)" opacity="0.96" />
+
+      <!-- Wing Structural Fingers / Struts (Chiropteran anatomy) -->
+      <path d="M 1155 200 L 1045 145 L 975 135" stroke="#3b0764" stroke-width="3" fill="none" opacity="0.6" />
+      <path d="M 1045 145 Q 1040 190 1025 240" stroke="#3b0764" stroke-width="2.5" fill="none" opacity="0.5" />
+      <path d="M 1045 145 Q 1075 230 1105 320" stroke="#3b0764" stroke-width="2.5" fill="none" opacity="0.5" />
+      <path d="M 1155 200 Q 1170 290 1190 375" stroke="#3b0764" stroke-width="2.5" fill="none" opacity="0.5" />
+
+      <!-- Upper Wing Leading Edge - Warm Moonlight Rim Accent -->
+      <path d="M 1265 305 
+               Q 1205 235 1155 200 
+               Q 1095 160 1045 145 
+               Q 1005 130 975 135"
+            stroke="url(#rimWarm)" stroke-width="5" stroke-linecap="round" fill="none" filter="url(#glowWarm)" />
+      
+      <!-- Subtle Thumb Hook at Wing Apex -->
+      <path d="M 1045 145 Q 1048 135 1042 132 Q 1038 135 1045 145" fill="#fde047" />
+    </g>
+
+    <!-- NEAR / FOREGROUND WING (Right Wing - Sweeping dynamically forward) -->
+    <g id="bat-near-wing">
+      <!-- Wing Membrane Geometry -->
+      <path d="M 1335 320 
+               Q 1395 275 1460 255 
+               Q 1525 225 1585 215 
+               Q 1630 220 1665 235
+               Q 1625 295 1630 350
+               Q 1565 385 1550 435
+               Q 1475 450 1440 480
+               Q 1380 445 1345 415 Z"
+            fill="url(#batWingNear)" opacity="0.97" />
+
+      <!-- Wing Structural Fingers / Struts -->
+      <path d="M 1460 255 L 1585 215 L 1665 235" stroke="#1e1b4b" stroke-width="3.5" fill="none" opacity="0.7" />
+      <path d="M 1585 215 Q 1615 280 1630 350" stroke="#1e1b4b" stroke-width="3" fill="none" opacity="0.6" />
+      <path d="M 1585 215 Q 1555 325 1550 435" stroke="#1e1b4b" stroke-width="3" fill="none" opacity="0.6" />
+      <path d="M 1460 255 Q 1450 370 1440 480" stroke="#1e1b4b" stroke-width="3" fill="none" opacity="0.6" />
+
+      <!-- Upper Leading Edge - Moonlight & Ambient Highlights -->
+      <path d="M 1335 320 
+               Q 1395 275 1460 255 
+               Q 1525 225 1585 215 
+               Q 1630 220 1665 235"
+            stroke="url(#rimWarm)" stroke-width="5.5" stroke-linecap="round" fill="none" filter="url(#glowWarm)" />
+      
+      <!-- Lower Wing Scallop Rims - Sonar Bounce Cyan Accent -->
+      <path d="M 1665 235 Q 1625 295 1630 350 Q 1565 385 1550 435 Q 1475 450 1440 480"
+            stroke="url(#rimCyan)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7" />
+
+      <!-- Wing Thumb Hook -->
+      <path d="M 1585 215 Q 1590 205 1584 202 Q 1578 205 1585 215" fill="#fde047" />
+    </g>
+
+    <!-- BAT BODY & TAIL MEMBRANE -->
+    <g id="bat-torso">
+      <!-- Tail Membrane (Uropatagium) stretched between legs -->
+      <path d="M 1290 430 Q 1315 470 1340 430 Q 1328 445 1315 448 Q 1302 445 1290 430 Z" fill="#1e1b4b" />
+      
+      <!-- Tucked Claws / Little Feet -->
+      <path d="M 1295 436 Q 1292 450 1297 455" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" fill="none" />
+      <path d="M 1335 436 Q 1338 450 1333 455" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+      <!-- Main Body Contour -->
+      <path d="M 1282 295 C 1268 335 1272 395 1292 435 C 1304 455 1326 455 1338 435 C 1358 395 1358 335 1344 295 Z"
+            fill="url(#batBodyGrad)" />
+      
+      <!-- Soft Belly Highlight -->
+      <path d="M 1292 330 C 1285 365 1290 405 1302 425 C 1314 435 1324 435 1328 420 C 1338 395 1340 365 1334 330 C 1322 315 1302 315 1292 330 Z"
+            fill="#4338ca" opacity="0.45" />
+    </g>
+
+    <!-- BAT HEAD, EARS, AND FRIENDLY FACE -->
+    <g id="bat-head-and-face">
+      <!-- Left Ear (Large, rounded, alert bat ear) -->
+      <g id="bat-ear-left">
+        <!-- Ear Outer -->
+        <path d="M 1290 265 C 1276 238 1258 200 1258 170 C 1272 172 1296 206 1308 246 Z"
+              fill="url(#batBodyGrad)" stroke="url(#rimWarm)" stroke-width="3" />
+        <!-- Ear Inner Radiant Fold -->
+        <path d="M 1286 255 C 1274 230 1266 196 1266 180 C 1274 186 1292 216 1300 244 Z"
+              fill="url(#earInnerGrad)" />
+      </g>
+
+      <!-- Right Ear -->
+      <g id="bat-ear-right">
+        <!-- Ear Outer -->
+        <path d="M 1328 250 C 1348 224 1378 190 1385 165 C 1385 180 1368 218 1346 256 Z"
+              fill="url(#batBodyGrad)" stroke="url(#rimWarm)" stroke-width="3" />
+        <!-- Ear Inner Radiant Fold -->
+        <path d="M 1336 246 C 1352 222 1372 192 1376 176 C 1374 188 1362 218 1348 250 Z"
+              fill="url(#earInnerGrad)" />
+      </g>
+
+      <!-- Head Base Dome -->
+      <ellipse cx="1318" cy="282" rx="34" ry="29" fill="url(#batHeadGrad)" />
+
+      <!-- Cheerful Snout / Muzzle -->
+      <path d="M 1324 284 Q 1352 287 1364 300 Q 1346 314 1322 308 Z" fill="#241042" />
+      
+      <!-- Friendly Cute Nose Button -->
+      <ellipse cx="1361" cy="297" rx="5" ry="4" fill="#f472b6" />
+      <circle cx="1362" cy="296" r="1.5" fill="#ffffff" />
+
+      <!-- Open Smiling Mouth (Vocalizing Sonar Chirp!) -->
+      <path d="M 1338 304 Q 1352 317 1365 304 Q 1352 308 1338 304 Z" fill="#f43f5e" />
+      <!-- Cute tiny tooth -->
+      <polygon points="1348,304 1351,309 1354,304" fill="#ffffff" />
+
+      <!-- Friendly Expressive Eye -->
+      <g id="bat-eye">
+        <ellipse cx="1334" cy="274" rx="8" ry="9.5" fill="#090d16" stroke="#38bdf8" stroke-width="1.8" />
+        <ellipse cx="1335" cy="274" rx="6.5" ry="8" fill="#0284c7" />
+        <ellipse cx="1336" cy="274" rx="4.5" ry="6" fill="#020617" />
+        <!-- Brilliant double catchlight shines -->
+        <circle cx="1338" cy="271" r="2.6" fill="#ffffff" />
+        <circle cx="1333" cy="277" r="1.3" fill="#ffffff" />
+      </g>
+
+      <!-- Warm Friendly Cheek Blush -->
+      <ellipse cx="1326" cy="295" rx="8.5" ry="5.5" fill="#f472b6" opacity="0.3" />
+    </g>
+  </g>
+
+  <!-- 8. TYPOGRAPHY AND BRAND LOCKUP (Left side zone) -->
+  <g id="brand-lockup">
+    <!-- Top Accent Bar -->
+    <rect x="140" y="228" width="72" height="4" rx="2" fill="url(#accentBarGrad)" />
+
+    <!-- Main Wordmark "ApiProber" -->
+    <text x="136" y="340"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+          font-size="112"
+          font-weight="900"
+          letter-spacing="-1.5px">
+      <tspan fill="url(#brandGrad)" filter="url(#glowCyan)">Api</tspan><tspan fill="#f8fafc">Prober</tspan>
+    </text>
+
+    <!-- Tagline (From README: "Passive API Discovery & Documentation") -->
+    <text x="140" y="398"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+          font-size="28"
+          font-weight="700"
+          fill="#94a3b8"
+          letter-spacing="4px">
+      PASSIVE API DISCOVERY &amp; DOCUMENTATION
+    </text>
+  </g>
+
+  <!-- 9. SUBTLE CORNER / VIGNETTE OVERLAY -->
+  <rect width="2400" height="680" fill="url(#vignetteGrad)" pointer-events="none" />
+</svg>
