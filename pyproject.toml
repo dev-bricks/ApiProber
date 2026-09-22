@@ -8,12 +8,33 @@ version = "0.1.0"
 description = "Passive API discovery and documentation CLI for undocumented REST services"
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"]
 requires-python = ">=3.8"
 authors = [
     {name = "Lukas Geiger", email = "lukisch@users.noreply.github.com"},
 ]
-keywords = ["api", "api-discovery", "rest-api", "openapi", "documentation", "passive-reconnaissance", "sqlite", "zero-dependency"]
+keywords = [
+    "api",
+    "api-discovery",
+    "rest-api",
+    "openapi",
+    "documentation",
+    "passive-reconnaissance",
+    "sqlite",
+    "zero-dependency",
+    "hateoas",
+    "schema-inference",
+    "schema-extraction",
+    "swagger",
+    "developer-tools",
+    "api-inventory",
+    "endpoint-discovery",
+    "local-first",
+    "ethical-reconnaissance",
+    "robots-txt",
+    "rate-limiting",
+    "cli",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

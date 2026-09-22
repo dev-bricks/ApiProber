@@ -1,0 +1,25 @@
+ApiProber
+Copyright (c) 2026 Lukas Geiger / dev-bricks / open-bricks
+
+This product includes software developed by Lukas Geiger and the dev-bricks
+open-source project (https://github.com/dev-bricks/ApiProber), part of the
+open-bricks software umbrella ecosystem (https://github.com/open-bricks).
+
+===============================================================================
+Product Architecture & Level 1 SBOM Attributions:
+- ApiProber CLI & Engine: MIT License (Copyright (c) 2026 dev-bricks)
+- Python Standard Library: Python Software Foundation License (PSF-2.0).
+- Pure Zero-Dependency Architecture: 0 third-party runtime packages required.
+
+System Invariant & Security Guarantees:
+- INV-LOCAL-01: 100% Zero Runtime Dependencies (Pure Python Standard Library)
+- INV-LOCAL-02: Zero Telemetry, Analytics Tracking, or Behavioral Phone-Home
+- INV-LOCAL-03: Zero Hardcoded Secrets & Redacted Credential Storage
+- INV-LOCAL-04: Strict Ethical Default & Automated robots.txt Compliance
+- INV-LOCAL-05: Rate-Limited & Non-Disruptive Probing (500ms Default Delay)
+- INV-LOCAL-06: Read-Only Default (GET, HEAD, OPTIONS; No Mutations by Default)
+- INV-LOCAL-07: Unprivileged Execution (RunAsInvoker, No Elevation Required)
+- INV-LOCAL-08: Full UTF-8 Encoding & Unicode Resilience
+- INV-SLA-09: 5-Day Vulnerability Triage & Reproducibility Assessment
+- INV-SLA-10: 48-Hour Security Response SLA via GitHub Private Advisories
+===============================================================================

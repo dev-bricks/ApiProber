@@ -34,6 +34,9 @@ def test_pep621_metadata():
 
 def test_version_parity():
     """Verify version synchronicity across pyproject.toml, package, and docs."""
+    import sys
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
     import ApiProber
     import api_prober
 
@@ -118,3 +121,87 @@ def test_readme_badges_and_links():
     # Badges
     assert "badge" in en_content.lower()
     assert "badge" in de_content.lower()
+
+
+def test_notice_and_sbom_contracts():
+    """Verify NOTICE and THIRD_PARTY_LICENSES.md (SBOM) exist and define invariants."""
+    notice_path = REPO_ROOT / "NOTICE"
+    sbom_path = REPO_ROOT / "THIRD_PARTY_LICENSES.md"
+
+    assert notice_path.exists(), "NOTICE must exist"
+    assert sbom_path.exists(), "THIRD_PARTY_LICENSES.md must exist"
+
+    notice_content = notice_path.read_text(encoding="utf-8")
+    sbom_content = sbom_path.read_text(encoding="utf-8")
+
+    for inv in [f"INV-LOCAL-0{i}" for i in range(1, 9)] + ["INV-SLA-09", "INV-SLA-10"]:
+        assert inv in notice_content, f"NOTICE must define {inv}"
+        assert inv in sbom_content, f"SBOM must define {inv}"
+
+    assert "RunAsInvoker" in sbom_content
+    assert "Zero Runtime Dependencies" in sbom_content
+    assert "Lukas Geiger" in notice_content
+    assert "dev-bricks" in notice_content
+    assert "open-bricks" in notice_content
+
+
+def test_bilingual_navigation_and_anchors():
+    """Verify synchronized 18-point navigation anchors across EN and DE READMEs."""
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    for i in range(1, 19):
+        anchor = f'<a id="sec-{i:02d}"></a>'
+        assert anchor in readme_en, f"README.md missing anchor {anchor}"
+        assert anchor in readme_de, f"README_de.md missing anchor {anchor}"
+
+    for persona in ["[PERSONA-01]", "[PERSONA-02]", "[PERSONA-03]", "[PERSONA-04]"]:
+        assert persona in readme_en, f"README.md missing {persona}"
+        assert persona in readme_de, f"README_de.md missing {persona}"
+
+
+def test_dual_mermaid_diagrams():
+    """Verify dual Mermaid diagrams (flowchart TD + sequenceDiagram) in both READMEs."""
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    for content, name in [(readme_en, "README.md"), (readme_de, "README_de.md")]:
+        assert "flowchart TD" in content, f"{name} must contain flowchart TD"
+        assert "sequenceDiagram" in content, f"{name} must contain sequenceDiagram"
+        assert "autonumber" in content, f"{name} sequenceDiagram must use autonumber"
+
+
+def test_bgb_statutory_disclaimer():
+    """Verify § 521 BGB gratuitous bailee liability limitation in both READMEs."""
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "§ 521 BGB" in readme_en
+    assert "§ 521 BGB" in readme_de
+    assert "unentgeltliche Open-Source-Schenkung" in readme_de
+
+
+def test_security_policy_sla():
+    """Verify SECURITY.md includes 48-hour response SLA and 5-day triage commitment."""
+    sec_path = REPO_ROOT / "SECURITY.md"
+    assert sec_path.exists(), "SECURITY.md must exist"
+
+    sec_content = sec_path.read_text(encoding="utf-8")
+    assert "INV-SLA-10" in sec_content
+    assert "48-Hour Response SLA" in sec_content
+    assert "INV-SLA-09" in sec_content
+    assert "5-Day Vulnerability Triage" in sec_content
+
+
+def test_pep621_license_files_and_keywords():
+    """Verify license-files includes NOTICE and SBOM, and keywords are saturated."""
+    pyproject_text = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert '"LICENSE"' in pyproject_text
+    assert '"NOTICE"' in pyproject_text
+    assert '"THIRD_PARTY_LICENSES.md"' in pyproject_text
+
+    match = re.search(r"keywords\s*=\s*\[(.*?)\]", pyproject_text, re.DOTALL)
+    assert match is not None, "keywords array must exist in pyproject.toml"
+    raw_keywords = [k.strip(' \n\t"') for k in match.group(1).split(",") if k.strip(' \n\t"')]
+    assert len(raw_keywords) >= 15, f"Expected >= 15 keywords, found {len(raw_keywords)}"
+

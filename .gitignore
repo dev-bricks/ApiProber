@@ -47,6 +47,7 @@ desktop.ini
 
 # Test, Lint & Coverage Caches
 .pytest_cache/
+.pytest_tmp*/
 .ruff_cache/
 .coverage
 htmlcov/

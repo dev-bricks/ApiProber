@@ -547,7 +547,7 @@ class TestPackagingMetadata:
 
         assert 'requires = ["setuptools>=77.0.3", "setuptools-scm"]' in pyproject
         assert 'license = "MIT"' in pyproject
-        assert 'license-files = ["LICENSE"]' in pyproject
+        assert "license-files =" in pyproject and '"LICENSE"' in pyproject
         assert "License ::" not in pyproject
 
     def test_wordlists_are_explicit_data_not_namespace_package(self):

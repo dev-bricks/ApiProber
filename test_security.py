@@ -188,7 +188,9 @@ def test_cli_rejects_legacy_secret_and_invalid_target_without_artifacts(tmp_path
     shutil.copytree(
         ROOT,
         copied_root,
-        ignore=shutil.ignore_patterns(".git", "data", "exports", "build", "dist", "__pycache__"),
+        ignore=shutil.ignore_patterns(
+            ".git", "data", "exports", "build", "dist", "__pycache__", ".pytest_tmp*", ".pytest_cache", ".ruff_cache"
+        ),
     )
     commands = [
         [sys.executable, "api_prober.py", "probe", "https://example.com", "--auth-value", canary],
@@ -491,7 +493,9 @@ def test_environment_secret_is_absent_from_windows_process_arguments(tmp_path):
     shutil.copytree(
         ROOT,
         copied_root,
-        ignore=shutil.ignore_patterns(".git", "data", "exports", "build", "dist", "__pycache__"),
+        ignore=shutil.ignore_patterns(
+            ".git", "data", "exports", "build", "dist", "__pycache__", ".pytest_tmp*", ".pytest_cache", ".ruff_cache"
+        ),
     )
     env = os.environ.copy()
     env["APIPROBER_AUTH_TYPE"] = "bearer"
