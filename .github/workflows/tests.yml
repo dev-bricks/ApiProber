@@ -52,7 +52,7 @@ jobs:
   mac-native:
     name: Native Mac ARM64 (py3.12, manual)
     if: github.event_name == 'workflow_dispatch' && github.repository == 'dev-bricks/ApiProber'
-    runs-on: [self-hosted, macOS, ARM64, mac-studio]
+    runs-on: macos-15
     timeout-minutes: 15
     env:
       PYTHONNOUSERSITE: "1"
@@ -82,7 +82,7 @@ jobs:
       - name: Compile, verify CLI entry points and run tests
         shell: bash
         run: |
-          python -c "import platform; print(platform.platform(), platform.machine())"
+          python -c "import platform; print(platform.platform(), platform.machine()); assert platform.system() == 'Darwin' and platform.machine() == 'arm64'"
           python -m compileall -q .
           python -m ApiProber --help
           apiprober --help
