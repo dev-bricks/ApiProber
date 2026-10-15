@@ -48,3 +48,42 @@ jobs:
 
       - name: Run test suite
         run: pytest -ra -v
+
+  mac-native:
+    name: Native Mac ARM64 (py3.12, manual)
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'dev-bricks/ApiProber'
+    runs-on: [self-hosted, macOS, ARM64, mac-studio]
+    timeout-minutes: 15
+    env:
+      PYTHONNOUSERSITE: "1"
+      PYTHONIOENCODING: utf-8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: arm64
+
+      - name: Create isolated test environment
+        shell: bash
+        run: |
+          test_env="$RUNNER_TEMP/apiprober-${{ github.run_id }}-${{ github.run_attempt }}"
+          python -m venv "$test_env"
+          echo "$test_env/bin" >> "$GITHUB_PATH"
+          echo "VIRTUAL_ENV=$test_env" >> "$GITHUB_ENV"
+          "$test_env/bin/python" -m pip install --upgrade pip
+          "$test_env/bin/python" -m pip install -e ".[test]"
+
+      - name: Compile, verify CLI entry points and run tests
+        shell: bash
+        run: |
+          python -c "import platform; print(platform.platform(), platform.machine())"
+          python -m compileall -q .
+          python -m ApiProber --help
+          apiprober --help
+          python -m pytest -ra -v
