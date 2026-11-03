@@ -2,6 +2,8 @@
 import json
 from pathlib import Path
 import re
+import subprocess
+import sys
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -63,6 +65,7 @@ def test_ci_matrix_coverage():
     assert "actions/setup-python@v5" in content
     assert "python -m compileall -q ." in content
     assert "pytest -ra -v" in content
+    assert "ruff check ." in content
 
 
 def test_gitignore_protection():
@@ -205,3 +208,34 @@ def test_pep621_license_files_and_keywords():
     raw_keywords = [k.strip(' \n\t"') for k in match.group(1).split(",") if k.strip(' \n\t"')]
     assert len(raw_keywords) >= 15, f"Expected >= 15 keywords, found {len(raw_keywords)}"
 
+
+def test_llms_txt_contract():
+    """Verify llms.txt exists and specifies boundaries, repository, and verification commands."""
+    llms_path = REPO_ROOT / "llms.txt"
+    assert llms_path.exists(), "llms.txt must exist"
+
+    content = llms_path.read_text(encoding="utf-8")
+    assert "Canonical repository: https://github.com/dev-bricks/ApiProber" in content
+    assert "Owner organization: dev-bricks" in content
+    assert "License: MIT" in content
+    assert "standard library only" in content
+    assert "test_smoke.py" in content
+    assert "python -m compileall -q ." in content
+    assert "Last-checked: 2026-11-03" in content
+    assert "Verified locally on 2026-11-03:" in content
+
+
+def test_ruff_linter_contract():
+    """Verify ruff linter configuration in pyproject.toml and clean static analysis."""
+    pyproject_text = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "[tool.ruff]" in pyproject_text
+    assert "[tool.ruff.lint]" in pyproject_text
+    assert "line-length = 100" in pyproject_text
+
+    result = subprocess.run(
+        [sys.executable, "-m", "ruff", "check", str(REPO_ROOT)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    assert result.returncode == 0, f"Ruff linting failed: {result.stdout}\n{result.stderr}"
