@@ -66,6 +66,7 @@ apiprober = "ApiProber.api_prober:main"
 [project.optional-dependencies]
 test = [
     "pytest>=8.0.0",
+    "ruff>=0.4.0",
 ]
 dev = [
     "pytest>=8.0.0",
