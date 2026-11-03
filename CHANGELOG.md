@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **CI Matrix Hardening (Path A)**: Added a dedicated, fast-failing `lint` job running `ruff check .` on Python 3.12 (`ubuntu-latest`) in `.github/workflows/tests.yml` to enforce static code hygiene in CI.
+- **Contract Testing Expansion**: Extended `tests/test_repository_hygiene.py` with `test_llms_txt_contract` (validating canonical repository, ethical boundaries, license, and verification anchors in `llms.txt`) and `test_ruff_linter_contract` (validating tool configuration and clean codebase linting), bringing test suite coverage to 108 passed tests.
+- **Documentation & Verification**: Synchronized test pass badges (`108 passed, 1 skipped`) across `README.md`, `README_de.md`, and `llms.txt` with `Last-checked: 2026-11-03`.
+
 ## 2026-09-10
 
 - **CI Matrix Hardening (Path A)**: Upgraded `.github/workflows/tests.yml` to official `@v4`/`@v5` GitHub Actions, added cross-platform testing on Ubuntu and Windows across Python 3.10–3.13, configured job concurrency with `cancel-in-progress: true`, and added bytecode validation (`compileall`) and CLI smoke verification steps.

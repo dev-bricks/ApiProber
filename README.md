@@ -10,7 +10,7 @@
 
 [![CI](https://github.com/dev-bricks/ApiProber/actions/workflows/tests.yml/badge.svg)](https://github.com/dev-bricks/ApiProber/actions/workflows/tests.yml)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![Pytest 106 passed, 1 skipped](https://img.shields.io/badge/pytest-106_passed%2C_1_skipped-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest 108 passed, 1 skipped](https://img.shields.io/badge/pytest-108_passed%2C_1_skipped-brightgreen.svg)](https://docs.pytest.org/)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-success.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![LLM-Ready](https://img.shields.io/badge/LLM--Ready-llms.txt-success.svg)](llms.txt)
